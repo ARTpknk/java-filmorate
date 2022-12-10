@@ -3,7 +3,9 @@ package ru.yandex.practicum.filmorate.controllers;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.models.Film;
 
 import java.time.LocalDate;
@@ -19,7 +21,7 @@ import javax.validation.Valid;
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
-    private final HashMap<String, Film> films = new HashMap<>();
+    private final HashMap<Integer, Film> films = new HashMap<>();
     LocalDate firstMovie = LocalDate.of(1895, 12, 28);
     protected int id = 0;
 
@@ -33,7 +35,7 @@ public class FilmController {
     public Film create(@Valid @RequestBody Film film) throws ValidationException{
 
         try {
-            if (film.getName().isBlank() || film.getName().isEmpty()) {
+            if (film.getName().isBlank() || film.getName().isEmpty() || film.getName().equals("")) {
                 log.info("Пустое название фильма " + film);
                 throw new ValidationException("Заполните название фильма");
             }
@@ -51,24 +53,19 @@ public class FilmController {
             } else {
                 id++;
                 film.setId(id);
-                films.put(film.getName(), film);
+                films.put(id, film);
                 log.info("Фильм успешно добавлен " + film);
             }
         }catch(RuntimeException ignored){
 
         }
-
         return film;
     }
 
     @PutMapping
     public Film put(@Valid @RequestBody Film film) throws ValidationException {
-        if(films.containsKey(film.getName())){
-            films.put(film.getName(), film);
-            log.info("Фильм успешно обновлён " + film);
-        }
-        else{
-            if(film.getName().isBlank()){
+        if(films.containsKey(film.getId())){
+            if(film.getName().isBlank()|| film.getName().isEmpty() || film.getName().equals("")){
                 log.info("Пустое название фильма " + film);
                 throw new ValidationException("Заполните название фильма");
             }
@@ -84,11 +81,12 @@ public class FilmController {
                 log.info("Неверная продолжительность фильма " + film.getDuration());
                 throw new ValidationException("Продолжительность фильма должна быть положительной");
             }
-            id++;
-            film.setId(id);
-            films.put(film.getName(), film);
-            log.info("Фильм успешно добавлен " + film);
+            films.put(film.getId(), film);
+            log.info("Фильм успешно обновлён " + film);
+            return film;
         }
-        return film;
+        else{
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
