@@ -15,7 +15,6 @@ public class Film {
     @NotEmpty
     protected String name;
     @NonNull
-    @Max(200) //???????????
     protected String description;
     @NonNull
     protected LocalDate releaseDate;
