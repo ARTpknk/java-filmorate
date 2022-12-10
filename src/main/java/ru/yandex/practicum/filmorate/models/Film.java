@@ -17,6 +17,7 @@ public class Film {
     @NonNull
     @Max(280)
     protected String description;
+    @NonNull
     protected final LocalDate releaseDate;
     @Positive
     protected final int duration;
