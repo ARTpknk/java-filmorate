@@ -31,26 +31,33 @@ public class FilmController {
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
-        if(film.getName().isBlank()){
-            log.info("Пустое название фильма " + film);
-            throw new ValidationException("Заполните название фильма");
+
+        try {
+            if (film.getName().isBlank() || film.getName().isEmpty()) {
+                log.info("Пустое название фильма " + film);
+                throw new ValidationException("Заполните название фильма");
+            }
+            if (film.getDescription().length() > 280) {
+                log.info("Слишком длинное описание " + film.getDescription());
+                throw new ValidationException("Слишком длинное описание");
+            }
+            if (film.getReleaseDate().isBefore(firstMovie)) {
+                log.info("Неверная дата " + film.getReleaseDate());
+                throw new ValidationException("Неверная дата, тогда ещё не снимали фильмы");
+            }
+            if (film.getDuration() < 0) {
+                log.info("Неверная продолжительность фильма " + film.getDuration());
+                throw new ValidationException("Продолжительность фильма должна быть положительной");
+            } else {
+                id++;
+                film.setId(id);
+                films.put(film.getName(), film);
+                log.info("Фильм успешно добавлен " + film);
+            }
+        }catch(RuntimeException ignored){
+
         }
-        if(film.getDescription().length()>280){
-            log.info("Слишком длинное описание " + film.getDescription());
-            throw new ValidationException("Слишком длинное описание");
-        }
-        if(film.getReleaseDate().isBefore(firstMovie) ){
-            log.info("Неверная дата " + film.getReleaseDate());
-            throw new ValidationException("Неверная дата, тогда ещё не снимали фильмы");
-        }
-        if(film.getDuration()<0){
-            log.info("Неверная продолжительность фильма " + film.getDuration());
-            throw new ValidationException("Продолжительность фильма должна быть положительной");
-        }
-        id++;
-        film.setId(id);
-        films.put(film.getName(), film);
-        log.info("Фильм успешно добавлен " + film);
+
         return film;
     }
 
