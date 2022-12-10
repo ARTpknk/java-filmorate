@@ -13,62 +13,75 @@ import java.util.HashMap;
 import java.util.List;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
     private final HashMap<String, Film> films = new HashMap<>();
     LocalDate firstMovie = LocalDate.of(1895, 12, 28);
+    protected int id = 0;
 
     @GetMapping
     public Collection<Film> findAll() {
-        // log.trace();
+        log.info("GET films");
         return films.values();
     }
 
     @PostMapping
-    public Film create(@RequestBody Film film) {
-        if(film.getName() == null || film.getName().isBlank()){
-            log.info("Пустое название фильма");
+    public Film create(@Valid @RequestBody Film film) {
+        if(film.getName().isBlank()){
+            log.info("Пустое название фильма " + film);
             throw new ValidationException("Заполните название фильма");
         }
         if(film.getDescription().length()>280){
-            log.info("Слишком длинное описание");
+            log.info("Слишком длинное описание " + film.getDescription());
             throw new ValidationException("Слишком длинное описание");
         }
         if(film.getReleaseDate().isBefore(firstMovie) ){
-            log.info("Неверная дата");
+            log.info("Неверная дата " + film.getReleaseDate());
             throw new ValidationException("Неверная дата, тогда ещё не снимали фильмы");
         }
         if(film.getDuration()<0){
-            log.info("Неверная продолжительность фильма");
+            log.info("Неверная продолжительность фильма " + film.getDuration());
             throw new ValidationException("Продолжительность фильма должна быть положительной");
         }
+        id++;
+        film.setId(id);
         films.put(film.getName(), film);
-        log.info("Фильм успешно добавлен");
+        log.info("Фильм успешно добавлен " + film);
         return film;
     }
 
     @PutMapping
-    public Film put(@RequestBody Film film) {
-        if(film.getName() == null || film.getName().isBlank()){
-            log.info("Пустое название фильма");
-            throw new ValidationException("Заполните название фильма");
+    public Film put(@Valid @RequestBody Film film) {
+        if(films.containsKey(film.getName())){
+            films.put(film.getName(), film);
+            log.info("Фильм успешно обновлён " + film);
         }
-        if(film.getDescription().length()>280){
-            log.info("Слишком длинное описание");
-            throw new ValidationException("Слишком длинное описание");
+        else{
+            if(film.getName().isBlank()){
+                log.info("Пустое название фильма " + film);
+                throw new ValidationException("Заполните название фильма");
+            }
+            if(film.getDescription().length()>280){
+                log.info("Слишком длинное описание " + film.getDescription());
+                throw new ValidationException("Слишком длинное описание");
+            }
+            if(film.getReleaseDate().isBefore(firstMovie) ){
+                log.info("Неверная дата " + film.getReleaseDate());
+                throw new ValidationException("Неверная дата, тогда ещё не снимали фильмы");
+            }
+            if(film.getDuration()<0){
+                log.info("Неверная продолжительность фильма " + film.getDuration());
+                throw new ValidationException("Продолжительность фильма должна быть положительной");
+            }
+            id++;
+            film.setId(id);
+            films.put(film.getName(), film);
+            log.info("Фильм успешно добавлен " + film);
         }
-        if(film.getReleaseDate().isBefore(firstMovie) ){
-            log.info("Неверная дата");
-            throw new ValidationException("Неверная дата, тогда ещё не снимали фильмы");
-        }
-        if(film.getDuration()<0){
-            log.info("Неверная продолжительность фильма");
-            throw new ValidationException("Продолжительность фильма должна быть положительной");
-        }
-        films.put(film.getName(), film);
-        log.info("Фильм успешно обновлён");
         return film;
     }
 }
