@@ -30,7 +30,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
+    public Film create(@Valid @RequestBody Film film) throws ValidationException{
 
         try {
             if (film.getName().isBlank() || film.getName().isEmpty()) {
@@ -62,7 +62,7 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film put(@Valid @RequestBody Film film) {
+    public Film put(@Valid @RequestBody Film film) throws ValidationException {
         if(films.containsKey(film.getName())){
             films.put(film.getName(), film);
             log.info("Фильм успешно обновлён " + film);

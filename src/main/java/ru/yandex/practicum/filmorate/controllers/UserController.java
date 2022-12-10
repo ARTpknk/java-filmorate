@@ -1,11 +1,7 @@
 package ru.yandex.practicum.filmorate.controllers;
 
-import com.sun.net.httpserver.HttpExchange;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-import ru.yandex.practicum.filmorate.FilmorateApplication;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.User;
 
@@ -28,7 +24,7 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
+    public User create(@Valid @RequestBody User user) throws ValidationException {
         try {
             if (user.getEmail().isEmpty() || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
                 log.info("Email заполнен неверно " + user.getEmail());
@@ -54,6 +50,7 @@ public class UserController {
             user.setId(id);
             users.put(user.getEmail(), user);
             log.info("Пользователь успешно добавлен " + user);
+
         }catch (RuntimeException ignored){
 
         }
@@ -61,7 +58,7 @@ public class UserController {
     }
 
     @PutMapping
-    public User put(@Valid  @RequestBody User user) {
+    public User put(@Valid  @RequestBody User user) throws ValidationException {
         if(users.containsKey(user.getName())){
             users.put(user.getName(), user);
             log.info("Пользователь успешно обновлён " + user);
