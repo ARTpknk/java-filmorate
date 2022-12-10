@@ -16,7 +16,7 @@ import java.util.HashMap;
 @RequestMapping("/users")
 @Slf4j
 public class UserController {
-    private final HashMap<String, User> users = new HashMap<>();
+    private final HashMap<Integer, User> users = new HashMap<>();
     protected int id = 0;
     LocalDate now = LocalDate.now();
 
@@ -50,12 +50,12 @@ public class UserController {
                 log.info("Отсутствие имени, заменено логином " + user.getLogin());
                 id++;
                 user.setId(id);
-                users.put(user.getEmail(), user);
+                users.put(id, user);
                 return user;//ошибка 5
             }
             id++;
             user.setId(id);
-            users.put(user.getEmail(), user);
+            users.put(id, user);
             log.info("Пользователь успешно добавлен " + user);
 //??????
         }catch (RuntimeException ignored){
@@ -66,7 +66,11 @@ public class UserController {
 
     @PutMapping
     public User put(@Valid  @RequestBody User user) throws ValidationException {
-        if(users.containsKey(user.getEmail())){ //изменено
+        if(users.containsKey(user.getId())){ //изменено
+            if (user.getEmail().isEmpty() || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
+                log.info("Email заполнен неверно " + user.getEmail());
+                throw new ValidationException("Email заполнен неверно");
+            }
             if(user.getLogin().isEmpty() || user.getLogin().isBlank() || user.getLogin().contains(" ")){
                 log.info("Логин заполнен неверно " + user.getLogin());
                 throw new ValidationException("Логин заполнен неверно");
@@ -78,10 +82,10 @@ public class UserController {
             if(user.getName().isEmpty() || user.getName().isBlank()){
                 user.setName(user.getLogin());
                 log.info("Отсутствие имени, заменено логином " + user.getLogin());
-                users.put(user.getEmail(), user);//изменение
+                users.put(user.getId(), user);//изменение
                 return user;
             }
-            users.put(user.getEmail(), user);
+            users.put(user.getId(), user);
             log.info("Пользователь успешно обновлён " + user);
             return user; //изменение
         }

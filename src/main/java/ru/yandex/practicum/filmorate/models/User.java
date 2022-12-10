@@ -17,7 +17,6 @@ public class User {
     @NotBlank
     @NotEmpty
     protected String login;
-    @NonNull
     protected String name;
     protected final LocalDate  birthday;
 }
