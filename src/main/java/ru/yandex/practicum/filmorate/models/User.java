@@ -14,7 +14,7 @@ public class User {
     protected int id;
     @NonNull
     @Email
-    protected final String email;
+    protected String email;
     @NonNull
     @NotBlank
     @NotEmpty
@@ -22,5 +22,5 @@ public class User {
     protected String name;
     @NonNull
     @PastOrPresent
-    protected final LocalDate  birthday;
+    protected LocalDate  birthday;
 }

@@ -39,7 +39,7 @@ public class FilmController {
                 log.info("Пустое название фильма " + film);
                 throw new ValidationException("Заполните название фильма");
             }
-            if (film.getDescription().length() > 280) {
+            if (film.getDescription().length() > 200) {
                 log.info("Слишком длинное описание " + film.getDescription());
                 throw new ValidationException("Слишком длинное описание");
             }
@@ -65,11 +65,7 @@ public class FilmController {
     @PutMapping
     public Film put(@Valid @RequestBody Film film) throws ValidationException {
         if(films.containsKey(film.getId())){
-            if(film.getName().isBlank()|| film.getName().isEmpty() || film.getName().equals("")){
-                log.info("Пустое название фильма " + film);
-                throw new ValidationException("Заполните название фильма");
-            }
-            if(film.getDescription().length()>280){
+            if(film.getDescription().length()>200){
                 log.info("Слишком длинное описание " + film.getDescription());
                 throw new ValidationException("Слишком длинное описание");
             }
