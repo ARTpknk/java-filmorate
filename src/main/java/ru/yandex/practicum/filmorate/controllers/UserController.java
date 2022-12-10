@@ -31,10 +31,6 @@ public class UserController {
         try {
             if (user.getEmail().isEmpty() || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
                 log.info("Email заполнен неверно " + user.getEmail());
-
-                //httpExchange.sendResponseHeaders(200, 0);
-                // throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-
                 throw new ValidationException("Email заполнен неверно");
             }
             if (user.getLogin().isEmpty() || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
@@ -45,7 +41,7 @@ public class UserController {
                 log.info("День рождения заполнен неверно " + user.getBirthday());
                 throw new ValidationException("День рождения заполнен неверно");
             }
-            if (user.getName().isEmpty() || user.getName().isBlank() || user.getName().equals("")) {
+            if (user.getName() == null) {
                 user.setName(user.getLogin());
                 log.info("Отсутствие имени, заменено логином " + user.getLogin());
                 id++;
@@ -53,11 +49,11 @@ public class UserController {
                 users.put(id, user);
                 return user;//ошибка 5
             }
+
             id++;
             user.setId(id);
             users.put(id, user);
             log.info("Пользователь успешно добавлен " + user);
-//??????
         }catch (RuntimeException ignored){
 
         }
