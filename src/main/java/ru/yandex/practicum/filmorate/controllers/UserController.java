@@ -45,7 +45,7 @@ public class UserController {
                 log.info("День рождения заполнен неверно " + user.getBirthday());
                 throw new ValidationException("День рождения заполнен неверно");
             }
-            if (user.getName().isEmpty() || user.getName().isBlank()) {
+            if (user.getName().isEmpty() || user.getName().isBlank() || user.getName().equals("")) {
                 user.setName(user.getLogin());
                 log.info("Отсутствие имени, заменено логином " + user.getLogin());
                 id++;
