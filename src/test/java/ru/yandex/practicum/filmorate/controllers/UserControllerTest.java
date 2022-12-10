@@ -11,11 +11,11 @@ public class UserControllerTest {
     LocalDate birthday = LocalDate.of(1997, 12, 19);
     LocalDate fakebirthday = LocalDate.of(19973, 12, 19);
 
-    User igor = new User("igor@gmail.com", "igoriok", "Igor", birthday);
-    User igor2 = new User("igorgmail.com", "igoriok", "Igor", birthday);
-    User igor3 = new User("igor@gmail.com", "igor i ok", "Igor", birthday);
-    User igor4 = new User("igor@gmail.com", "igoriok", "Igor", fakebirthday);
-    User igor5 = new User("igor@gmail.com", "igoriok", "", birthday);
+    User igor = new User("igor@gmail.com", "igoriok",  birthday);
+    User igor2 = new User("igorgmail.com", "igoriok", birthday);
+    User igor3 = new User("igor@gmail.com", "igor i ok",  birthday);
+    User igor4 = new User("igor@gmail.com", "igoriok", fakebirthday);
+    User igor5 = new User("igor@gmail.com", "igoriok",  birthday);
 
     UserController userController = new UserController();
 
