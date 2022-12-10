@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.yandex.practicum.filmorate.FilmorateApplication;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.User;
 
@@ -34,6 +35,7 @@ public class UserController {
 
                 //httpExchange.sendResponseHeaders(200, 0);
                 // throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
                 throw new ValidationException("Email заполнен неверно");
             }
             if (user.getLogin().isEmpty() || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
