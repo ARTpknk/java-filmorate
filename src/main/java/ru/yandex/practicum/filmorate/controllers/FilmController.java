@@ -34,7 +34,7 @@ public class FilmController {
     @PostMapping
     public Film create(@Valid @RequestBody Film film) throws ValidationException{
 
-        try {
+        //try {
             if (film.getName().isBlank() || film.getName().isEmpty() || film.getName().equals("")) {
                 log.info("Пустое название фильма " + film);
                 throw new ValidationException("Заполните название фильма");
@@ -56,9 +56,12 @@ public class FilmController {
                 films.put(id, film);
                 log.info("Фильм успешно добавлен " + film);
             }
-        }catch(RuntimeException ignored){
+        /*}
+        catch(RuntimeException ignored){
 
         }
+
+         */
         return film;
     }
 
