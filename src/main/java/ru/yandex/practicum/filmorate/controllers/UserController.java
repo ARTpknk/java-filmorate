@@ -28,25 +28,25 @@ public class UserController {
 
     @PostMapping
     public User create(@Valid @RequestBody User user) throws ValidationException {
-            if (user.getName() == null) {
-                user.setName(user.getLogin());
-                log.info("Отсутствие имени, заменено логином " + user.getLogin());
-                id++;
-                user.setId(id);
-                users.put(id, user);
-                return user;//ошибка 5
-            }
+        if (user.getName() == null) {
+            user.setName(user.getLogin());
+            log.info("Отсутствие имени, заменено логином " + user.getLogin());
             id++;
             user.setId(id);
             users.put(id, user);
-            log.info("Пользователь успешно добавлен " + user);
+            return user;//ошибка 5
+        }
+        id++;
+        user.setId(id);
+        users.put(id, user);
+        log.info("Пользователь успешно добавлен " + user);
         return user;
     }
 
     @PutMapping
-    public User put(@Valid  @RequestBody User user) throws ValidationException {
-        if(users.containsKey(user.getId())){ //изменено
-            if(user.getName().isEmpty() || user.getName().isBlank()){
+    public User put(@Valid @RequestBody User user) throws ValidationException {
+        if (users.containsKey(user.getId())) { //изменено
+            if (user.getName().isEmpty() || user.getName().isBlank()) {
                 user.setName(user.getLogin());
                 log.info("Отсутствие имени, заменено логином " + user.getLogin());
                 users.put(user.getId(), user);//изменение
@@ -55,8 +55,7 @@ public class UserController {
             users.put(user.getId(), user);
             log.info("Пользователь успешно обновлён " + user);
             return user; //изменение
-        }
-        else{
+        } else {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

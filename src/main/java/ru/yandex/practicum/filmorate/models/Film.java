@@ -3,9 +3,10 @@ package ru.yandex.practicum.filmorate.models;
 import lombok.Data;
 import lombok.NonNull;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Positive;
 import java.time.LocalDate;
-import java.util.Date;
 
 @Data
 public class Film {

@@ -22,5 +22,5 @@ public class User {
     protected String name;
     @NonNull
     @PastOrPresent
-    protected LocalDate  birthday;
+    protected LocalDate birthday;
 }

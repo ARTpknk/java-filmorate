@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(code = HttpStatus.BAD_REQUEST)
 public class FilmorateApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(FilmorateApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(FilmorateApplication.class, args);
+    }
 
 }
