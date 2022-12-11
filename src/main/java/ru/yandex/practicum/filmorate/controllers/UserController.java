@@ -28,19 +28,6 @@ public class UserController {
 
     @PostMapping
     public User create(@Valid @RequestBody User user) throws ValidationException {
-        try {
-            if (user.getEmail().isEmpty() || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-                log.info("Email заполнен неверно " + user.getEmail());
-                throw new ValidationException("Email заполнен неверно");
-            }
-            if (user.getLogin().isEmpty() || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-                log.info("Логин заполнен неверно " + user.getLogin());
-                throw new ValidationException("Логин заполнен неверно");
-            }
-            if (user.getBirthday().isAfter(now)) {  //ошибка 1
-                log.info("День рождения заполнен неверно " + user.getBirthday());
-                throw new ValidationException("День рождения заполнен неверно");
-            }
             if (user.getName() == null) {
                 user.setName(user.getLogin());
                 log.info("Отсутствие имени, заменено логином " + user.getLogin());
@@ -49,32 +36,16 @@ public class UserController {
                 users.put(id, user);
                 return user;//ошибка 5
             }
-
             id++;
             user.setId(id);
             users.put(id, user);
             log.info("Пользователь успешно добавлен " + user);
-        }catch (RuntimeException ignored){
-
-        }
         return user;
     }
 
     @PutMapping
     public User put(@Valid  @RequestBody User user) throws ValidationException {
         if(users.containsKey(user.getId())){ //изменено
-            if (user.getEmail().isEmpty() || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-                log.info("Email заполнен неверно " + user.getEmail());
-                throw new ValidationException("Email заполнен неверно");
-            }
-            if(user.getLogin().isEmpty() || user.getLogin().isBlank() || user.getLogin().contains(" ")){
-                log.info("Логин заполнен неверно " + user.getLogin());
-                throw new ValidationException("Логин заполнен неверно");
-            }
-            if(user.getBirthday().isAfter(LocalDate.now())){ //возможная ошибка
-                log.info("День рождения заполнен неверно " + user.getBirthday());
-                throw new ValidationException("День рождения заполнен неверно");
-            }
             if(user.getName().isEmpty() || user.getName().isBlank()){
                 user.setName(user.getLogin());
                 log.info("Отсутствие имени, заменено логином " + user.getLogin());
