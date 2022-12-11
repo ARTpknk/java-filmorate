@@ -35,31 +35,29 @@ public class FilmController {
         if (film.getReleaseDate().isBefore(firstMovie)) {
             log.info("Неверная дата " + film.getReleaseDate());
             throw new ValidationException("Неверная дата, тогда ещё не снимали фильмы");
-        } else {
-            id++;
-            film.setId(id);
-            films.put(id, film);
-            log.info("Фильм успешно добавлен " + film);
         }
+        id++;
+        film.setId(id);
+        films.put(id, film);
+        log.info("Фильм успешно добавлен " + film);
         return film;
     }
 
     @PutMapping
     public Film put(@Valid @RequestBody Film film) throws ValidationException {
-        if (films.containsKey(film.getId())) {
-            if (film.getDescription().length() > 200) {
-                log.info("Слишком длинное описание " + film.getDescription());
-                throw new ValidationException("Слишком длинное описание");
-            }
-            if (film.getReleaseDate().isBefore(firstMovie)) {
-                log.info("Неверная дата " + film.getReleaseDate());
-                throw new ValidationException("Неверная дата, тогда ещё не снимали фильмы");
-            }
-            films.put(film.getId(), film);
-            log.info("Фильм успешно обновлён " + film);
-            return film;
-        } else {
+        if (!films.containsKey(film.getId())) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        if (film.getDescription().length() > 200) {
+            log.info("Слишком длинное описание " + film.getDescription());
+            throw new ValidationException("Слишком длинное описание");
+        }
+        if (film.getReleaseDate().isBefore(firstMovie)) {
+            log.info("Неверная дата " + film.getReleaseDate());
+            throw new ValidationException("Неверная дата, тогда ещё не снимали фильмы");
+        }
+        films.put(film.getId(), film);
+        log.info("Фильм успешно обновлён " + film);
+        return film;
     }
 }
