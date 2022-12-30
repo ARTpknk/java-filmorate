@@ -51,7 +51,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     public boolean containsKey(int id) {
         return users.containsKey(id);
-    }
+    } //не знаю, как сделать private, ведь он используется в сервисе
 
     public User getUser(int id) {
         if (!users.containsKey(id)) {

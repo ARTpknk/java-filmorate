@@ -1,28 +1,32 @@
 package ru.yandex.practicum.filmorate.models;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 public class Film implements Comparable<Film> {
-    protected int id;
-    protected Set<Integer> likes;
+    private int id;
+    private Set<Integer> likes;
     @NotBlank
-    @NotEmpty
-    protected String name;
+    @NotNull
+    private String name;
     @NonNull
-    protected String description;
+    private String description;
     @NonNull
-    protected LocalDate releaseDate;
+    private LocalDate releaseDate;
     @Positive
     @NonNull
-    protected int duration;
+    private int duration;
 
     @Override
     public String toString() {

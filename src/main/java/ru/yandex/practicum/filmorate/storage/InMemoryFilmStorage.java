@@ -49,7 +49,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     public boolean containsKey(Film film) {
         return films.containsKey(film.getId());
-    }
+    } //не знаю, как сделать private, ведь он используется в сервисе
 
     public boolean checkDescriptionLength(Film film) {
         return film.getDescription().length() > MAX_DESCRIPTION_LENGTH;
