@@ -89,6 +89,7 @@ public class FilmController {
     public void deleteLike(@PathVariable int id, @PathVariable int userId) {
         if(userId<1){
             throw new NotFoundException(" ");
+
         }
         filmService.deleteLike(id, userId);
     }
