@@ -88,7 +88,7 @@ public class FilmController {
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLike(@PathVariable int id, @PathVariable int userId) {
         if(userId<1){
-            throw new ValidationException(" ");
+            throw new NotFoundException(" ");
         }
         filmService.deleteLike(id, userId);
     }
