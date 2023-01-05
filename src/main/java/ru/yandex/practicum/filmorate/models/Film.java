@@ -27,6 +27,8 @@ public class Film implements Comparable<Film> {
     @Positive
     @NonNull
     private int duration;
+    private String genre;
+    private String mpa;
 
     @Override
     public String toString() {
