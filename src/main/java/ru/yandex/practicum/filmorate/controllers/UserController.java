@@ -1,61 +1,67 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping
 @Slf4j
 public class UserController {
-    private final HashMap<Integer, User> users = new HashMap<>();
-    protected int id = 0;
+    private final UserService userService;
 
-    @GetMapping
-    public Collection<User> findAll() {
-        log.info("GET user");
-        return users.values();
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    @PostMapping
-    public User create(@Valid @RequestBody User user) throws ValidationException {
-        if (user.getName() == null) {
-            user.setName(user.getLogin());
-            log.info("Отсутствие имени, заменено логином " + user.getLogin());
-            id++;
-            user.setId(id);
-            users.put(id, user);
-            return user;//ошибка 5
-        }
-        id++;
-        user.setId(id);
-        users.put(id, user);
-        log.info("Пользователь успешно добавлен " + user);
+    @GetMapping("/users")
+    public Collection<User> findAll() {
+        log.info("GET user");
+        return userService.getAllUsers();
+    }
+
+    @GetMapping("/users/{id}")
+    public User getUser(@PathVariable int id) {
+        return userService.getUser(id);
+    }
+
+    @PostMapping("/users")
+    public User create(@Valid @RequestBody User user) {
+        userService.addUser(user);
         return user;
     }
 
-    @PutMapping
-    public User put(@Valid @RequestBody User user) throws ValidationException {
-        if (users.containsKey(user.getId())) { //изменено
-            if (user.getName().isEmpty() || user.getName().isBlank()) {
-                user.setName(user.getLogin());
-                log.info("Отсутствие имени, заменено логином " + user.getLogin());
-                users.put(user.getId(), user);//изменение
-                return user;
-            }
-            users.put(user.getId(), user);
-            log.info("Пользователь успешно обновлён " + user);
-            return user; //изменение
-        } else {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PutMapping("/users")
+    public User put(@Valid @RequestBody User user) {
+        userService.put(user);
+        log.info("Пользователь успешно обновлён " + user);
+        return user;
+    }
+
+    @PutMapping("/users/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+        userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/users/{id}/friends/{friendId}")
+    public void deleteFriend(@PathVariable int id, @PathVariable Integer friendId) {
+        userService.deleteFriend(id, friendId);
+    }
+
+    @GetMapping("/users/{id}/friends")
+    public List<User> getFriends(@PathVariable int id) {
+        return userService.getFriendsList(id);
+    }
+
+    @GetMapping("/users/{id}/friends/common/{friendId}")
+    public List<User> getCommonFriends(@PathVariable int id, @PathVariable int friendId) {
+        return userService.getCommonFriendsList(id, friendId);
     }
 }
-//не запускались тесты
