@@ -1,8 +1,7 @@
 # java-filmorate
 Template repository for Filmorate project.
 
-![Untitled (3)](https://user-images.githubusercontent.com/108333044/211214573-097e2d14-8fd6-4e0b-ac22-91c68899e30d.png)
-
+![Untitled (4)](https://user-images.githubusercontent.com/108333044/211214603-d20408e8-29e2-4bc4-b3cd-c2ea25d16361.png)
 
 Примеры использования базы данных:
 Задача 1: выгрузить таблицу со столбацами (название фильма, жанр)
