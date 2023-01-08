@@ -1,6 +1,7 @@
 # java-filmorate
 Template repository for Filmorate project.
 
+![Untitled (3)](https://user-images.githubusercontent.com/108333044/211214573-097e2d14-8fd6-4e0b-ac22-91c68899e30d.png)
 
 
 Примеры использования базы данных:
