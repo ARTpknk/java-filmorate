@@ -2,12 +2,14 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -16,18 +18,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+@Qualifier("filmDbStorage")
 @Slf4j
 @Service
 public class FilmService {
-    protected FilmStorage filmStorage;
+    protected FilmDbStorage filmStorage;
     protected UserStorage userStorage;
     protected FilmComparator filmComparator;
-    LocalDate firstMovie = LocalDate.of(1895, 12, 28);
-
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage, FilmComparator filmComparator) {
+    public FilmService(FilmDbStorage filmStorage, UserStorage userStorage, FilmComparator filmComparator) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.filmComparator = filmComparator;
@@ -87,30 +87,13 @@ public class FilmService {
     }
 
     public void updateFilm(Film film) {
-        if (!filmStorage.containsKey(film)) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        if (filmStorage.checkDescriptionLength(film)) {
-            log.info("Слишком длинное описание " + film.getDescription());
-            throw new ValidationException("Слишком длинное описание");
-        }
-        if (film.getReleaseDate().isBefore(firstMovie)) {
-            log.info("Неверная дата " + film.getReleaseDate());
-            throw new ValidationException("Неверная дата, тогда ещё не снимали фильмы");
-        }
         filmStorage.updateFilm(film);
         log.info("Фильм успешно обновлён ");
     }
 
     public void addFilm(Film film) {
-        if (film.getDescription().length() > 200) {
-            log.info("Слишком длинное описание " + film.getDescription());
-            throw new ValidationException("Слишком длинное описание");
-        }
-        if (film.getReleaseDate().isBefore(firstMovie)) {
-            log.info("Неверная дата " + film.getReleaseDate());
-            throw new ValidationException("Неверная дата, тогда ещё не снимали фильмы");
-        }
+        System.out.println("СЕРВИС ПРИНЯЛ");
+        System.out.println(film);
         filmStorage.addFilm(film);
     }
 

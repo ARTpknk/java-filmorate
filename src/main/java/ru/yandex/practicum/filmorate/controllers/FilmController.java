@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -17,7 +18,6 @@ import java.util.List;
 @Slf4j
 public class FilmController {
     private final FilmService filmService;
-    LocalDate firstMovie = LocalDate.of(1895, 12, 28);
 
     @Autowired
     public FilmController(FilmService filmService) {
@@ -37,6 +37,10 @@ public class FilmController {
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) throws ValidationException {
+        System.out.println("КОНТРОЛЛЕР ПРИНЯЛ");
+        System.out.println();
+
+
         filmService.addFilm(film);
         log.info("Фильм успешно добавлен " + film);
         return film;

@@ -1,23 +1,36 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-
+@Slf4j
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
     private final HashMap<Integer, Film> films = new HashMap<>();
     protected int id = 0;
     public static final int MAX_DESCRIPTION_LENGTH = 200;
+    LocalDate firstMovie = LocalDate.of(1895, 12, 28);
 
     @Override
     public void addFilm(Film film) {
+        if (film.getDescription().length() > 200) {
+            log.info("Слишком длинное описание " + film.getDescription());
+            throw new ValidationException("Слишком длинное описание");
+        }
+        if (film.getReleaseDate().isBefore(firstMovie)) {
+            log.info("Неверная дата " + film.getReleaseDate());
+            throw new ValidationException("Неверная дата, тогда ещё не снимали фильмы");
+        }
         Set<Integer> likes = new HashSet<>();
         film.setLikes(likes);
         id++;
@@ -36,23 +49,25 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void updateFilm(Film film) {
+        if (!films.containsKey(film.getId())) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        if (film.getDescription().length() > MAX_DESCRIPTION_LENGTH) {
+            log.info("Слишком длинное описание " + film.getDescription());
+            throw new ValidationException("Слишком длинное описание");
+        }
+        if (film.getReleaseDate().isBefore(firstMovie)) {
+            log.info("Неверная дата " + film.getReleaseDate());
+            throw new ValidationException("Неверная дата, тогда ещё не снимали фильмы");
+        }
         Set<Integer> likes = new HashSet<>();
         film.setLikes(likes);
         films.put(film.getId(), film);
     }
 
-
     @Override
     public Collection<Film> getAllFilms() {
         return films.values();
-    }
-
-    public boolean containsKey(Film film) {
-        return films.containsKey(film.getId());
-    } //не знаю, как сделать private, ведь он используется в сервисе
-
-    public boolean checkDescriptionLength(Film film) {
-        return film.getDescription().length() > MAX_DESCRIPTION_LENGTH;
     }
 
     public Film getFilm(int id) {

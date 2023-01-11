@@ -1,19 +1,19 @@
 package ru.yandex.practicum.filmorate.models;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Getter
 @Setter
 @RequiredArgsConstructor
+
 public class Film implements Comparable<Film> {
     private int id;
     private Set<Integer> likes;
@@ -27,8 +27,10 @@ public class Film implements Comparable<Film> {
     @Positive
     @NonNull
     private int duration;
-    private String genre;
-    private String mpa;
+    private Object[] genres;
+    private Object mpa;
+
+
 
     @Override
     public String toString() {
@@ -50,6 +52,8 @@ public class Film implements Comparable<Film> {
     public static int returnPopularity(Film film) {
         return film.getLikes().size();
     }
+
+
 
 }
 
