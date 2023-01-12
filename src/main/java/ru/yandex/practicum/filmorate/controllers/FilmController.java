@@ -2,10 +2,13 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.models.Mpa;
+import com.google.gson.*;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -39,8 +42,6 @@ public class FilmController {
     public Film create(@Valid @RequestBody Film film) throws ValidationException {
         System.out.println("КОНТРОЛЛЕР ПРИНЯЛ");
         System.out.println();
-
-
         filmService.addFilm(film);
         log.info("Фильм успешно добавлен " + film);
         return film;

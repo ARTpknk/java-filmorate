@@ -1,12 +1,15 @@
 package ru.yandex.practicum.filmorate.models;
 
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -18,7 +21,7 @@ public class Film implements Comparable<Film> {
     private int id;
     private Set<Integer> likes;
     @NotBlank
-    @NotNull
+    @NonNull
     private String name;
     @NonNull
     private String description;
@@ -27,10 +30,9 @@ public class Film implements Comparable<Film> {
     @Positive
     @NonNull
     private int duration;
-    private Object[] genres;
-    private Object mpa;
-
-
+    private Genre[] genres;
+    @NonNull
+    private Mpa mpa;
 
     @Override
     public String toString() {
@@ -41,6 +43,8 @@ public class Film implements Comparable<Film> {
                 ", description='" + description + '\'' +
                 ", releaseDate=" + releaseDate +
                 ", duration=" + duration +
+                ", genres=" + Arrays.toString(genres) +
+                ", mpa=" + mpa +
                 '}';
     }
 
