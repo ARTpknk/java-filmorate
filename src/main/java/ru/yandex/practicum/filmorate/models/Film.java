@@ -1,16 +1,14 @@
 package ru.yandex.practicum.filmorate.models;
 
-import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -51,13 +49,6 @@ public class Film implements Comparable<Film> {
     public int compareTo(Film film) {
         return this.likes.size() - film.likes.size();
     }
-
-    public static int returnPopularity(Film film) {
-        return film.getLikes().size();
-    }
-
-
-
 }
 
 

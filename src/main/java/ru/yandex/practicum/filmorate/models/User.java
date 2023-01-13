@@ -27,7 +27,6 @@ public class User {
     @NotBlank
     @NotEmpty
     private String login;
-
     private String name;
     @NonNull
     @PastOrPresent

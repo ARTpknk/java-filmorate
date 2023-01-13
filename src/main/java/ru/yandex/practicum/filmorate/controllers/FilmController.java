@@ -2,18 +2,14 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.Genre;
-import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.models.Mpa;
-import com.google.gson.*;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -53,7 +49,7 @@ public class FilmController {
     }
 
     @PutMapping("/films/{id}/like/{userId}")
-    public void addLike(@PathVariable int id, @PathVariable int userId) throws ClassNotFoundException {
+    public void addLike(@PathVariable int id, @PathVariable int userId) {
         filmService.addLike(id, userId);
     }
 
@@ -69,26 +65,22 @@ public class FilmController {
     }
 
     @GetMapping("/genres")
-    public Genre[] getAllGenres(){
+    public Genre[] getAllGenres() {
         return filmService.getAllGenres();
     }
 
-   @GetMapping("/genres/{id}")
-    public Genre getGenre(@PathVariable int id){
+    @GetMapping("/genres/{id}")
+    public Genre getGenre(@PathVariable int id) {
         return filmService.getGenre(id);
     }
 
     @GetMapping("/mpa")
-    public Mpa[] getAllMpa(){
+    public Mpa[] getAllMpa() {
         return filmService.getAllMpa();
     }
 
     @GetMapping("/mpa/{id}")
-    public Mpa getMpa(@PathVariable int id){
+    public Mpa getMpa(@PathVariable int id) {
         return filmService.getMpa(id);
     }
-
-
-
-
 }

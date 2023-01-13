@@ -2,20 +2,15 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
-import ru.yandex.practicum.filmorate.models.Film;
-import ru.yandex.practicum.filmorate.models.Genre;
-import ru.yandex.practicum.filmorate.models.Mpa;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.User;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-
 import java.time.LocalDate;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,8 +33,8 @@ public class UserDbStorage implements UserStorage {
         id++;
         user.setId(id);
 
-        String sqlQuery = "insert into USERS(USER_NAME, USER_EMAIL, USER_LOGIN, USER_BIRTHDAY) " +
-                "values ( ?, ?, ?, ?)";
+        String sqlQuery = "INSERT INTO users(user_name, user_email, user_login, user_birthday) " +
+                "VALUES ( ?, ?, ?, ?)";
         jdbcTemplate.update(sqlQuery, user.getName(), user.getEmail(), user.getLogin(), user.getBirthday());
 
     }
@@ -59,12 +54,12 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void removeUser(User user) {
-        String sqlUpdate = "select USER_ID FROM USERS";
+        String sqlUpdate = "SELECT user_id FROM users";
         List<Integer> idList = new ArrayList<>(jdbcTemplate.queryForList(sqlUpdate, Integer.class));
         if (!idList.contains(user.getId())) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
-            String sqlQuery = "delete from USERS where id = ?";
+            String sqlQuery = "DELETE FROM users WHERE id = ?";
             jdbcTemplate.update(sqlQuery, user.getId());
         }
     }
@@ -72,14 +67,14 @@ public class UserDbStorage implements UserStorage {
     @Override
     public void updateUser(User user) {
         checkIsUserExists(user);
-        String sqlQuery = "update USERS set USER_NAME=?, USER_EMAIL=?, USER_LOGIN=?, USER_BIRTHDAY=? " +
-                "where USER_ID=?";
+        String sqlQuery = "UPDATE users SET user_name=?, user_email=?, user_login=?, user_birthday=? " +
+                "WHERE user_id=?";
         jdbcTemplate.update(sqlQuery, user.getName(), user.getEmail(), user.getLogin(), user.getBirthday(), user.getId());
     }
 
     public void checkIsUserExists(User user) {
         findException(user);
-        String sqlUpdate = "select USER_ID from USERS";
+        String sqlUpdate = "SELECT user_id FROM users";
         List<Integer> idList = new ArrayList<>(jdbcTemplate.queryForList(sqlUpdate, Integer.class));
         if (!idList.contains(user.getId())) {
             throw new NotFoundException("id не найден");
@@ -89,7 +84,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public Collection<User> getAllUsers() {
         List<User> users = new ArrayList<>();
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from USERS");
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users");
         while (userRows.next()) {
             users.add(getUserMethod(userRows));
         }
@@ -99,12 +94,12 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User getUser(int id) {
-        String sqlUpdate = "select USER_ID from USERS";
+        String sqlUpdate = "SELECT user_id FROM users";
         List<Integer> idList = new ArrayList<>(jdbcTemplate.queryForList(sqlUpdate, Integer.class));
         if (!idList.contains(id)) {
             throw new NotFoundException("id не найден");
         }
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from USERS where USER_ID =? ", id);
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE user_id =? ", id);
         if (userRows.next()) {
             return getUserMethod(userRows);
         } else {
@@ -113,15 +108,15 @@ public class UserDbStorage implements UserStorage {
     }
 
     public User getUserMethod(SqlRowSet userRows) {
-        User user = new User(Objects.requireNonNull(userRows.getString("USER_EMAIL")),
-                Objects.requireNonNull(userRows.getString("USER_LOGIN")),
-                Objects.requireNonNull(userRows.getDate("USER_BIRTHDAY")).toLocalDate());
-        user.setId(userRows.getInt("USER_ID"));
-        user.setName(userRows.getString("USER_NAME"));
+        User user = new User(Objects.requireNonNull(userRows.getString("user_email")),
+                Objects.requireNonNull(userRows.getString("user_login")),
+                Objects.requireNonNull(userRows.getDate("user_birthday")).toLocalDate());
+        user.setId(userRows.getInt("user_id"));
+        user.setName(userRows.getString("user_name"));
 
-        String sqlUpdate = ("select SECOND_FRIEND_ID from FRIENDSHIP where FIRST_FRIEND_ID = " + user.getId());
+        String sqlUpdate = ("SELECT second_friend_id FROM friendship WHERE first_friend_id = " + user.getId());
         Set<Long> idSet = new HashSet<>(jdbcTemplate.queryForList(sqlUpdate, Long.class));
-        String sqlUpdate2 = ("select SECOND_FRIEND_ID from FRIENDSHIP where SECOND_FRIEND_ID = " + user.getId());
+        String sqlUpdate2 = ("SELECT second_friend_id FROM friendship WHERE second_friend_id = " + user.getId());
         Set<Long> idSet2 = new HashSet<>(jdbcTemplate.queryForList(sqlUpdate2, Long.class));
         idSet.addAll(idSet2);
         user.setFriends(idSet);
@@ -135,19 +130,19 @@ public class UserDbStorage implements UserStorage {
         if (getUser(id2) == null) {
             throw new NotFoundException(" ");
         }
-        String sqlQuery = "insert into FRIENDSHIP (FIRST_FRIEND_ID, SECOND_FRIEND_ID)" +
-                "values (?, ?)";
+        String sqlQuery = "INSERT INTO friendship (first_friend_id, second_friend_id)" +
+                "VALUES (?, ?)";
         jdbcTemplate.update(sqlQuery, id1, id2);
     }
 
     public void deleteFriend(int id1, int id2) {
-            String sqlQuery = "delete from FRIENDSHIP where FIRST_FRIEND_ID = ? and SECOND_FRIEND_ID = ? ";
-            jdbcTemplate.update(sqlQuery, id1, id2);
+        String sqlQuery = "DELETE FROM friendship WHERE first_friend_id = ? AND second_friend_id = ? ";
+        jdbcTemplate.update(sqlQuery, id1, id2);
     }
 
     public List<User> getFriendsList(int id) {
         List<User> friends = new ArrayList<>();
-        String sqlUpdate = ("select SECOND_FRIEND_ID from FRIENDSHIP where FIRST_FRIEND_ID = " + id);
+        String sqlUpdate = ("SELECT second_friend_id FROM friendship WHERE first_friend_id = " + id);
         List<Integer> idList = new ArrayList<>(jdbcTemplate.queryForList(sqlUpdate, Integer.class));
         for (Integer id4 : idList) {
             friends.add(getUser(id4));
@@ -159,16 +154,6 @@ public class UserDbStorage implements UserStorage {
     public List<User> getCommonFriendsList(int id1, int id2) {
 
 
-
-
-
-
         return getFriendsList(id1).stream().filter(s -> getFriendsList(id2).contains(s)).collect(Collectors.toList());
-    }
-
-
-    @Override
-    public boolean containsKey(int id) {
-        return false;
     }
 }

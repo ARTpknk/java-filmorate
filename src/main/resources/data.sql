@@ -1,15 +1,15 @@
-INSERT INTO GENRE (GENRE_NAME) VALUES('Комедия');
-INSERT INTO GENRE (GENRE_NAME) VALUES('Драма');
-INSERT INTO GENRE (GENRE_NAME) VALUES('Мультфильм');
-INSERT INTO GENRE (GENRE_NAME) VALUES('Триллер');
-INSERT INTO GENRE (GENRE_NAME) VALUES('Документальный');
-INSERT INTO GENRE (GENRE_NAME) VALUES('Боевик');
+INSERT INTO genre (genre_name) VALUES('Комедия');
+INSERT INTO genre (genre_name) VALUES('Драма');
+INSERT INTO genre (genre_name) VALUES('Мультфильм');
+INSERT INTO genre (genre_name) VALUES('Триллер');
+INSERT INTO genre (genre_name) VALUES('Документальный');
+INSERT INTO genre (genre_name) VALUES('Боевик');
 
-INSERT INTO MPA (MPA_NAME) VALUES('G');
-INSERT INTO MPA (MPA_NAME) VALUES('PG');
-INSERT INTO MPA (MPA_NAME) VALUES('PG-13');
-INSERT INTO MPA (MPA_NAME) VALUES('R');
-INSERT INTO MPA (MPA_NAME) VALUES('NC-17');
+INSERT INTO mpa (mpa_name) VALUES('G');
+INSERT INTO mpa (mpa_name) VALUES('PG');
+INSERT INTO mpa (mpa_name) VALUES('PG-13');
+INSERT INTO mpa (mpa_name) VALUES('R');
+INSERT INTO mpa (mpa_name) VALUES('NC-17');
 
 
 

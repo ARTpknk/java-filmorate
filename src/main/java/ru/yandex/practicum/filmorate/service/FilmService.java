@@ -3,24 +3,19 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.Genre;
-import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserDbStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.models.Mpa;
+import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
+
 @Qualifier("filmDbStorage")
 @Slf4j
 @Service
@@ -45,12 +40,8 @@ public class FilmService {
 
     public void deleteLike(int id, int userId) {
         if (userId < 1) {
-            throw new NotFoundException(" ");
-        }
-        if (!userStorage.containsKey(userId)) {
-            throw new NotFoundException(" ");
-        }
-        else {
+            throw new NotFoundException("Пользователь с отрицательным id");
+        } else {
             filmStorage.deleteFilmWithLikes(id, userId);
         }
     }
@@ -83,21 +74,19 @@ public class FilmService {
         filmStorage.addFilm(film);
     }
 
-    public Genre[] getAllGenres(){
+    public Genre[] getAllGenres() {
         return filmStorage.getAllGenres();
     }
 
-   public Genre getGenre(int id){
+    public Genre getGenre(int id) {
         return filmStorage.getGenre(id);
     }
 
-    public Mpa[] getAllMpa(){
+    public Mpa[] getAllMpa() {
         return filmStorage.getAllMpa();
     }
 
-    public Mpa getMpa(int id){
+    public Mpa getMpa(int id) {
         return filmStorage.getMpa(id);
     }
-
-
 }
