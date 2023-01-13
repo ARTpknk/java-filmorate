@@ -36,61 +36,7 @@ public class UserDbStorage implements UserStorage {
         String sqlQuery = "INSERT INTO users(user_name, user_email, user_login, user_birthday) " +
                 "VALUES ( ?, ?, ?, ?)";
         jdbcTemplate.update(sqlQuery, user.getName(), user.getEmail(), user.getLogin(), user.getBirthday());
-
     }
-
-    public void findException(User user) {
-        if (user.getEmail().isEmpty() || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-            throw new ValidationException("Нет почты");
-        }
-        if (user.getLogin().isEmpty() || user.getLogin().isBlank()) {
-            throw new ValidationException("Нет логина");
-        }
-
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Вы родились завтра?");
-        }
-    }
-
-    @Override
-    public void removeUser(User user) {
-        String sqlUpdate = "SELECT user_id FROM users";
-        List<Integer> idList = new ArrayList<>(jdbcTemplate.queryForList(sqlUpdate, Integer.class));
-        if (!idList.contains(user.getId())) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        } else {
-            String sqlQuery = "DELETE FROM users WHERE id = ?";
-            jdbcTemplate.update(sqlQuery, user.getId());
-        }
-    }
-
-    @Override
-    public void updateUser(User user) {
-        checkIsUserExists(user);
-        String sqlQuery = "UPDATE users SET user_name=?, user_email=?, user_login=?, user_birthday=? " +
-                "WHERE user_id=?";
-        jdbcTemplate.update(sqlQuery, user.getName(), user.getEmail(), user.getLogin(), user.getBirthday(), user.getId());
-    }
-
-    public void checkIsUserExists(User user) {
-        findException(user);
-        String sqlUpdate = "SELECT user_id FROM users";
-        List<Integer> idList = new ArrayList<>(jdbcTemplate.queryForList(sqlUpdate, Integer.class));
-        if (!idList.contains(user.getId())) {
-            throw new NotFoundException("id не найден");
-        }
-    }
-
-    @Override
-    public Collection<User> getAllUsers() {
-        List<User> users = new ArrayList<>();
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users");
-        while (userRows.next()) {
-            users.add(getUserMethod(userRows));
-        }
-        return users;
-    }
-
 
     @Override
     public User getUser(int id) {
@@ -107,20 +53,22 @@ public class UserDbStorage implements UserStorage {
         }
     }
 
-    public User getUserMethod(SqlRowSet userRows) {
-        User user = new User(Objects.requireNonNull(userRows.getString("user_email")),
-                Objects.requireNonNull(userRows.getString("user_login")),
-                Objects.requireNonNull(userRows.getDate("user_birthday")).toLocalDate());
-        user.setId(userRows.getInt("user_id"));
-        user.setName(userRows.getString("user_name"));
+    @Override
+    public Collection<User> getAllUsers() {
+        List<User> users = new ArrayList<>();
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users");
+        while (userRows.next()) {
+            users.add(getUserMethod(userRows));
+        }
+        return users;
+    }
 
-        String sqlUpdate = ("SELECT second_friend_id FROM friendship WHERE first_friend_id = " + user.getId());
-        Set<Long> idSet = new HashSet<>(jdbcTemplate.queryForList(sqlUpdate, Long.class));
-        String sqlUpdate2 = ("SELECT second_friend_id FROM friendship WHERE second_friend_id = " + user.getId());
-        Set<Long> idSet2 = new HashSet<>(jdbcTemplate.queryForList(sqlUpdate2, Long.class));
-        idSet.addAll(idSet2);
-        user.setFriends(idSet);
-        return user;
+    @Override
+    public void updateUser(User user) {
+        checkIsUserExists(user);
+        String sqlQuery = "UPDATE users SET user_name=?, user_email=?, user_login=?, user_birthday=? " +
+                "WHERE user_id=?";
+        jdbcTemplate.update(sqlQuery, user.getName(), user.getEmail(), user.getLogin(), user.getBirthday(), user.getId());
     }
 
     public void addFriend(int id1, int id2) {
@@ -150,10 +98,57 @@ public class UserDbStorage implements UserStorage {
         return friends;
     }
 
-
     public List<User> getCommonFriendsList(int id1, int id2) {
-
-
         return getFriendsList(id1).stream().filter(s -> getFriendsList(id2).contains(s)).collect(Collectors.toList());
+    }
+
+    private void findException(User user) {
+        if (user.getEmail().isEmpty() || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
+            throw new ValidationException("Нет почты");
+        }
+        if (user.getLogin().isEmpty() || user.getLogin().isBlank()) {
+            throw new ValidationException("Нет логина");
+        }
+
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            throw new ValidationException("Вы родились завтра?");
+        }
+    }
+
+    @Override
+    public void removeUser(User user) {
+        String sqlUpdate = "SELECT user_id FROM users";
+        List<Integer> idList = new ArrayList<>(jdbcTemplate.queryForList(sqlUpdate, Integer.class));
+        if (!idList.contains(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            String sqlQuery = "DELETE FROM users WHERE id = ?";
+            jdbcTemplate.update(sqlQuery, user.getId());
+        }
+    }
+
+    private void checkIsUserExists(User user) {
+        findException(user);
+        String sqlUpdate = "SELECT user_id FROM users";
+        List<Integer> idList = new ArrayList<>(jdbcTemplate.queryForList(sqlUpdate, Integer.class));
+        if (!idList.contains(user.getId())) {
+            throw new NotFoundException("id не найден");
+        }
+    }
+
+    private User getUserMethod(SqlRowSet userRows) {
+        User user = new User(Objects.requireNonNull(userRows.getString("user_email")),
+                Objects.requireNonNull(userRows.getString("user_login")),
+                Objects.requireNonNull(userRows.getDate("user_birthday")).toLocalDate());
+        user.setId(userRows.getInt("user_id"));
+        user.setName(userRows.getString("user_name"));
+
+        String sqlUpdate = ("SELECT second_friend_id FROM friendship WHERE first_friend_id = " + user.getId());
+        Set<Long> idSet = new HashSet<>(jdbcTemplate.queryForList(sqlUpdate, Long.class));
+        String sqlUpdate2 = ("SELECT second_friend_id FROM friendship WHERE second_friend_id = " + user.getId());
+        Set<Long> idSet2 = new HashSet<>(jdbcTemplate.queryForList(sqlUpdate2, Long.class));
+        idSet.addAll(idSet2);
+        user.setFriends(idSet);
+        return user;
     }
 }

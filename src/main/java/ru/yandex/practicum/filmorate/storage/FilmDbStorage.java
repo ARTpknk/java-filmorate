@@ -56,7 +56,8 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public void updateFilm(Film film) {
         checkIsFilmExists(film);
-        String sqlQuery = "UPDATE film SET mpa_id=?, film_release_date=?, film_duration=?, film_name=?, film_description=? WHERE film_id=? ";
+        String sqlQuery = ("UPDATE film SET mpa_id=?, film_release_date=?, film_duration=?, film_name=?," +
+                " film_description=? WHERE film_id=? ");
         jdbcTemplate.update(sqlQuery, film.getMpa().getId(), film.getReleaseDate(), film.getDuration(), film.getName(),
                 film.getDescription(), film.getId());
 
@@ -76,63 +77,16 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
-    public void findException(Film film) {
-        if (film.getName().isEmpty() || film.getName().isBlank()) {
-            throw new ValidationException("Нет имени");
-        }
-        if (film.getDescription().length() > MAX_DESCRIPTION_LENGTH) {
-            log.info("Слишком длинное описание " + film.getDescription());
-            throw new ValidationException("Слишком длинное описание");
-        }
-        if (film.getReleaseDate().isBefore(firstMovie)) {
-            log.info("Неверная дата " + film.getReleaseDate());
-            throw new ValidationException("Неверная дата, тогда ещё не снимали фильмы");
-        }
-        if (film.getDuration() < 1) {
-            throw new ValidationException("Продолжительность фильма отрицательная");
-        }
-    }
-
-    public void checkIsFilmExists(Film film) {
-        findException(film);
-        String sqlUpdate = "SELECT film_id FROM film";
-        List<Integer> idList = new ArrayList<>(jdbcTemplate.queryForList(sqlUpdate, Integer.class));
-        if (!idList.contains(film.getId())) {
-            throw new NotFoundException("id не найден");
-        }
-    }
-
-    public Genre[] makeGenresUnique(Film film) {
-        ArrayList<Genre> listGenres = new ArrayList<>();
-        Collections.addAll(listGenres, film.getGenres());
-        ArrayList<Genre> uniqueGenres = (ArrayList<Genre>) listGenres.stream().distinct().collect(Collectors.toList());
-        Genre[] finalGenres = new Genre[uniqueGenres.size()];
-        for (int i = 0; i < uniqueGenres.size(); i++) {
-            finalGenres[i] = uniqueGenres.get(i);
-        }
-        return finalGenres;
-    }
-
-    @Override
-    public void removeFilm(Film film) {
-        String sqlUpdate = "SELECT film_id from film";
-        List<Integer> idList = new ArrayList<>(jdbcTemplate.queryForList(sqlUpdate, Integer.class));
-        if (!idList.contains(film.getId())) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        } else {
-            String sqlQuery = "DELETE FROM film WHERE id = ?";
-            jdbcTemplate.update(sqlQuery, film.getId());
-        }
-    }
-
     @Override
     public Collection<Film> getAllFilms() {
         List<Film> films = new ArrayList<>();
-        SqlRowSet filmRows = jdbcTemplate.queryForRowSet("SELECT * FROM film AS f LEFT JOIN mpa AS m ON f.mpa_id = m.mpa_id");
+        SqlRowSet filmRows = jdbcTemplate.queryForRowSet("SELECT * FROM film AS f LEFT JOIN mpa AS m ON f.mpa_id" +
+                " = m.mpa_id");
         while (filmRows.next()) {
             Film film = getFilmMethod(filmRows);
 
-            SqlRowSet genreRows = jdbcTemplate.queryForRowSet("SELECT * FROM genre_film AS gf LEFT JOIN genre AS g ON gf.genre_id = g.genre_id WHERE film_id = ?", film.getId());
+            SqlRowSet genreRows = jdbcTemplate.queryForRowSet("SELECT * FROM genre_film AS gf " +
+                    "LEFT JOIN genre AS g ON gf.genre_id = g.genre_id WHERE film_id = ?", film.getId());
             List<Genre> genres = new ArrayList<>();
             int idList = 0;
             while (genreRows.next()) {
@@ -163,10 +117,12 @@ public class FilmDbStorage implements FilmStorage {
         if (!idList.contains(id)) {
             throw new NotFoundException("id не найден");
         }
-        SqlRowSet filmRows = jdbcTemplate.queryForRowSet("SELECT * FROM film AS f LEFT JOIN mpa AS m ON f.mpa_id= m.mpa_id WHERE film_id = ?", id);
+        SqlRowSet filmRows = jdbcTemplate.queryForRowSet("SELECT * FROM film AS f " +
+                "LEFT JOIN mpa AS m ON f.mpa_id= m.mpa_id WHERE film_id = ?", id);
         if (filmRows.next()) {
             Film film = getFilmMethod(filmRows);
-            SqlRowSet genreRows = jdbcTemplate.queryForRowSet("SELECT * FROM genre_film as gf LEFT JOIN genre AS g ON gf.genre_id = g.genre_id WHERE film_id = ?", id);
+            SqlRowSet genreRows = jdbcTemplate.queryForRowSet("SELECT * FROM genre_film as gf " +
+                    "LEFT JOIN genre AS g ON gf.genre_id = g.genre_id WHERE film_id = ?", id);
             List<Genre> genres = new ArrayList<>();
             while (genreRows.next()) {
                 int genreId = genreRows.getInt("genre_id");
@@ -191,7 +147,7 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
-    public Film getFilmMethod(SqlRowSet filmRows) {
+    private Film getFilmMethod(SqlRowSet filmRows) {
         Film film = new Film(
                 Objects.requireNonNull(filmRows.getString("film_name")),
                 Objects.requireNonNull(filmRows.getString("film_description")),
@@ -251,7 +207,6 @@ public class FilmDbStorage implements FilmStorage {
         return genres1;
     }
 
-
     public Genre getGenre(int id) {
         SqlRowSet genreRows = jdbcTemplate.queryForRowSet("SELECT genre_name FROM genre WHERE genre_id=" + id);
         if (genreRows.next()) {
@@ -285,6 +240,55 @@ public class FilmDbStorage implements FilmStorage {
             return new Mpa(id, mpaName);
         } else {
             throw new NotFoundException(" ");
+        }
+    }
+
+    private void findException(Film film) {
+        if (film.getName().isEmpty() || film.getName().isBlank()) {
+            throw new ValidationException("Нет имени");
+        }
+        if (film.getDescription().length() > MAX_DESCRIPTION_LENGTH) {
+            log.info("Слишком длинное описание " + film.getDescription());
+            throw new ValidationException("Слишком длинное описание");
+        }
+        if (film.getReleaseDate().isBefore(firstMovie)) {
+            log.info("Неверная дата " + film.getReleaseDate());
+            throw new ValidationException("Неверная дата, тогда ещё не снимали фильмы");
+        }
+        if (film.getDuration() < 1) {
+            throw new ValidationException("Продолжительность фильма отрицательная");
+        }
+    }
+
+    private void checkIsFilmExists(Film film) {
+        findException(film);
+        String sqlUpdate = "SELECT film_id FROM film";
+        List<Integer> idList = new ArrayList<>(jdbcTemplate.queryForList(sqlUpdate, Integer.class));
+        if (!idList.contains(film.getId())) {
+            throw new NotFoundException("id не найден");
+        }
+    }
+
+    private Genre[] makeGenresUnique(Film film) {
+        ArrayList<Genre> listGenres = new ArrayList<>();
+        Collections.addAll(listGenres, film.getGenres());
+        ArrayList<Genre> uniqueGenres = (ArrayList<Genre>) listGenres.stream().distinct().collect(Collectors.toList());
+        Genre[] finalGenres = new Genre[uniqueGenres.size()];
+        for (int i = 0; i < uniqueGenres.size(); i++) {
+            finalGenres[i] = uniqueGenres.get(i);
+        }
+        return finalGenres;
+    }
+
+    @Override
+    public void removeFilm(Film film) {
+        String sqlUpdate = "SELECT film_id from film";
+        List<Integer> idList = new ArrayList<>(jdbcTemplate.queryForList(sqlUpdate, Integer.class));
+        if (!idList.contains(film.getId())) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            String sqlQuery = "DELETE FROM film WHERE id = ?";
+            jdbcTemplate.update(sqlQuery, film.getId());
         }
     }
 }
