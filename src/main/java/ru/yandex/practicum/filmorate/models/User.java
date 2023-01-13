@@ -31,6 +31,18 @@ public class User {
     @PastOrPresent
     private LocalDate birthday;
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", friends=" + friends +
+                ", email='" + email + '\'' +
+                ", login='" + login + '\'' +
+                ", name='" + name + '\'' +
+                ", birthday=" + birthday +
+                '}';
+    }
+
     public void addFriend(Long id) {
         friends.add(id);
     }

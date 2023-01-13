@@ -31,7 +31,6 @@ public class Film implements Comparable<Film> {
     @NonNull
     private int duration;
     private Genre[] genres;
-    @NonNull
     private Mpa mpa;
 
     @Override

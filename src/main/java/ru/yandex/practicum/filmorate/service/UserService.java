@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
@@ -15,11 +16,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-    protected UserStorage userStorage;
+    protected UserDbStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
-        this.userStorage = userStorage;
+    public UserService(UserDbStorage userStorage) {
+        this.userStorage= userStorage;
     }
 
     public void addFriend(Integer id1, Integer id2) {

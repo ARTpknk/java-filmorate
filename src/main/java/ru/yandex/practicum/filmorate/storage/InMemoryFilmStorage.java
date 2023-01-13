@@ -78,7 +78,28 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void updateFilmWithLikes(Film film) {
-        films.put(film.getId(), film);
+    public void updateFilmWithLikes(int id, int userId) {
+        Film film = getFilm(id);
+        if (!film.getLikes().contains(userId)) {
+            Set<Integer> buffer = film.getLikes();
+            buffer.add(userId);
+            film.setLikes(buffer);
+            films.put(id, films.get(id));
+        } else {
+            throw new ValidationException("пользователь уже поставил лайк");
+        }
+    }
+
+    @Override
+    public void deleteFilmWithLikes(int id, int userId) {
+        Film film = getFilm(id);
+        if (film.getLikes().contains(userId)) {
+            Set<Integer> buffer = film.getLikes();
+            buffer.remove(userId);
+            film.setLikes(buffer);
+            films.put(id, films.get(id));
+        } else {
+            throw new ValidationException("пользователь не ставил лайк");
+        }
     }
 }
