@@ -56,11 +56,7 @@ public class FilmService {
     }
 
     public List<Film> getPopularFilms(int count) {
-        System.out.println("СЕРВИС ПРИНЯЛ");
-
         if (filmStorage.getAllFilms().isEmpty()) {
-            System.out.println("НЕТ ФИЛЬМОВ");
-
             throw new NotFoundException("Фильмы не созданы");
         }
         return filmStorage.getAllFilms().stream()

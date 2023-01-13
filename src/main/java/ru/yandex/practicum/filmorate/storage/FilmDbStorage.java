@@ -115,8 +115,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void removeFilm(Film film) {
-        String sqlUpdate;
-        sqlUpdate = "select FILM_ID from FILM";
+        String sqlUpdate  = "select FILM_ID from FILM";
         List<Integer> idList = new ArrayList<>(jdbcTemplate.queryForList(sqlUpdate, Integer.class));
         if (!idList.contains(film.getId())) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -211,27 +210,6 @@ public class FilmDbStorage implements FilmStorage {
         film.setLikes(likes);
         return film;
     }
-
-/*
-            SqlRowSet genreRows = jdbcTemplate.queryForRowSet("select * from GENRE_FILM as gf left join GENRE AS g on gf.GENRE_ID = g.GENRE_ID where film_id = ?", id);
-            List<Genre> genres = new ArrayList<>();
-            while (genreRows.next()) {
-                int genreId = genreRows.getInt("GENRE_ID");
-                String genreName = genreRows.getString("GENRE_NAME");
-                Genre genre = new Genre(genreId, genreName);
-                genres.add(genre);
-            }
-            if(!genres.isEmpty()) {
-                Genre[] genres1 = new Genre[genres.size()];
-                for (int i = 0; i < genres.size(); i++) {
-                    genres1[i] = genres.get(i);
-                }
-                film.setGenres(genres1);
-            }
-        return film;
-    }
-
- */
 
     @Override
     public void updateFilmWithLikes(int id, int userId) {

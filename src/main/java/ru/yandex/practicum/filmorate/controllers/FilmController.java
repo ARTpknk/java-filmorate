@@ -41,7 +41,6 @@ public class FilmController {
 
     @PostMapping("/films")
     public Film create(@Valid @RequestBody Film film) throws ValidationException {
-        System.out.println();
         filmService.addFilm(film);
         log.info("Фильм успешно добавлен " + film);
         return film;
@@ -65,7 +64,6 @@ public class FilmController {
 
     @GetMapping("/films/popular")
     public List<Film> getPopularFilms(@RequestParam(required = false, defaultValue = "10") String count) {
-        System.out.println("КОНТРОЛЛЕР ПРИНЯЛ");
         int countInt = Integer.parseInt(count);
         return filmService.getPopularFilms(countInt);
     }
