@@ -1,9 +1,7 @@
 package ru.yandex.practicum.filmorate.models;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
@@ -13,23 +11,29 @@ import java.util.Set;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 
 public class Film implements Comparable<Film> {
-    private int id;
-    private Set<Integer> likes;
-    @NotBlank
+    int id;
+    Set<Integer> likes;
+    @NotBlank //без nonNull нужно делать конструктор (наверное по-другому нельзя)
+    String name;
     @NonNull
-    private String name;
+    String description;
     @NonNull
-    private String description;
-    @NonNull
-    private LocalDate releaseDate;
+    LocalDate releaseDate;
     @Positive
     @NonNull
-    private int duration;
-    private Genre[] genres;
-    private Mpa mpa;
+    int duration;
+    Genre[] genres;
+    Mpa mpa;
+
+    public Film(String name, @NonNull String description, @NonNull LocalDate releaseDate, @NonNull int duration) {
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+    }
 
     @Override
     public String toString() {

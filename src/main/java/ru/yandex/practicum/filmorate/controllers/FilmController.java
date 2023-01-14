@@ -24,6 +24,27 @@ public class FilmController {
         this.filmService = filmService;
     }
 
+    //для genres и mpa нужен отдельный контроллер?
+    @GetMapping("/genres")
+    public Genre[] getAllGenres() {
+        return filmService.getAllGenres();
+    }
+
+    @GetMapping("/genres/{id}")
+    public Genre getGenre(@PathVariable int id) {
+        return filmService.getGenre(id);
+    }
+
+    @GetMapping("/mpa")
+    public Mpa[] getAllMpa() {
+        return filmService.getAllMpa();
+    }
+
+    @GetMapping("/mpa/{id}")
+    public Mpa getMpa(@PathVariable int id) {
+        return filmService.getMpa(id);
+    }
+
     @GetMapping("/films")
     public Collection<Film> findAll() {
         log.info("GET films");
@@ -62,25 +83,5 @@ public class FilmController {
     public List<Film> getPopularFilms(@RequestParam(required = false, defaultValue = "10") String count) {
         int countInt = Integer.parseInt(count);
         return filmService.getPopularFilms(countInt);
-    }
-
-    @GetMapping("/genres")
-    public Genre[] getAllGenres() {
-        return filmService.getAllGenres();
-    }
-
-    @GetMapping("/genres/{id}")
-    public Genre getGenre(@PathVariable int id) {
-        return filmService.getGenre(id);
-    }
-
-    @GetMapping("/mpa")
-    public Mpa[] getAllMpa() {
-        return filmService.getAllMpa();
-    }
-
-    @GetMapping("/mpa/{id}")
-    public Mpa getMpa(@PathVariable int id) {
-        return filmService.getMpa(id);
     }
 }
