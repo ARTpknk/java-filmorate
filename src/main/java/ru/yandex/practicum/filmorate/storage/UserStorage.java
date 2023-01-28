@@ -13,7 +13,5 @@ public interface UserStorage {
 
     Collection<User> getAllUsers();
 
-    boolean containsKey(int id);
-
     User getUser(int id);
 }

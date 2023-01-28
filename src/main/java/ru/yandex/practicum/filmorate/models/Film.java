@@ -1,34 +1,39 @@
 package ru.yandex.practicum.filmorate.models;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Set;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+
 public class Film implements Comparable<Film> {
-    private int id;
-    private Set<Integer> likes;
-    @NotBlank
-    @NotNull
-    private String name;
+    int id;
+    Set<Integer> likes;
+    @NotBlank //без nonNull нужно делать конструктор (наверное по-другому нельзя)
+    String name;
     @NonNull
-    private String description;
+    String description;
     @NonNull
-    private LocalDate releaseDate;
+    LocalDate releaseDate;
     @Positive
     @NonNull
-    private int duration;
-    private String genre;
-    private String mpa;
+    int duration;
+    Genre[] genres;
+    Mpa mpa;
+
+    public Film(String name, @NonNull String description, @NonNull LocalDate releaseDate, @NonNull int duration) {
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+    }
 
     @Override
     public String toString() {
@@ -39,6 +44,8 @@ public class Film implements Comparable<Film> {
                 ", description='" + description + '\'' +
                 ", releaseDate=" + releaseDate +
                 ", duration=" + duration +
+                ", genres=" + Arrays.toString(genres) +
+                ", mpa=" + mpa +
                 '}';
     }
 
@@ -46,11 +53,6 @@ public class Film implements Comparable<Film> {
     public int compareTo(Film film) {
         return this.likes.size() - film.likes.size();
     }
-
-    public static int returnPopularity(Film film) {
-        return film.getLikes().size();
-    }
-
 }
 
 

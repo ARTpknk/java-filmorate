@@ -2,32 +2,30 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.models.Genre;
+import ru.yandex.practicum.filmorate.models.Mpa;
+import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
+@Qualifier("filmDbStorage")
 @Slf4j
 @Service
 public class FilmService {
-    protected FilmStorage filmStorage;
-    protected UserStorage userStorage;
+    protected FilmDbStorage filmStorage;
+    protected UserDbStorage userStorage;
     protected FilmComparator filmComparator;
-    LocalDate firstMovie = LocalDate.of(1895, 12, 28);
-
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage, FilmComparator filmComparator) {
+    public FilmService(FilmDbStorage filmStorage, UserDbStorage userStorage, FilmComparator filmComparator) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.filmComparator = filmComparator;
@@ -37,33 +35,14 @@ public class FilmService {
         if (userId < 1) {
             throw new ValidationException(" ");
         }
-        Film film = filmStorage.getFilm(id);
-        if (!film.getLikes().contains(userId)) {
-            Set<Integer> buffer = film.getLikes();
-            buffer.add(userId);
-            film.setLikes(buffer);
-            filmStorage.updateFilmWithLikes(film);
-        } else {
-            throw new ValidationException("пользователь уже поставил лайк");
-        }
+        filmStorage.updateFilmWithLikes(id, userId);
     }
 
     public void deleteLike(int id, int userId) {
         if (userId < 1) {
-            throw new NotFoundException(" ");
-        }
-        if (!userStorage.containsKey(userId)) {
-            throw new NotFoundException(" ");
+            throw new NotFoundException("Пользователь с отрицательным id");
         } else {
-            Film film = filmStorage.getFilm(id);
-            if (film.getLikes().contains(userId)) {
-                Set<Integer> buffer = film.getLikes();
-                buffer.remove(userId);
-                film.setLikes(buffer);
-                filmStorage.updateFilmWithLikes(film);
-            } else {
-                throw new ValidationException("пользователь не ставил лайк");
-            }
+            filmStorage.deleteFilmWithLikes(id, userId);
         }
     }
 
@@ -87,31 +66,27 @@ public class FilmService {
     }
 
     public void updateFilm(Film film) {
-        if (!filmStorage.containsKey(film)) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        if (filmStorage.checkDescriptionLength(film)) {
-            log.info("Слишком длинное описание " + film.getDescription());
-            throw new ValidationException("Слишком длинное описание");
-        }
-        if (film.getReleaseDate().isBefore(firstMovie)) {
-            log.info("Неверная дата " + film.getReleaseDate());
-            throw new ValidationException("Неверная дата, тогда ещё не снимали фильмы");
-        }
         filmStorage.updateFilm(film);
         log.info("Фильм успешно обновлён ");
     }
 
     public void addFilm(Film film) {
-        if (film.getDescription().length() > 200) {
-            log.info("Слишком длинное описание " + film.getDescription());
-            throw new ValidationException("Слишком длинное описание");
-        }
-        if (film.getReleaseDate().isBefore(firstMovie)) {
-            log.info("Неверная дата " + film.getReleaseDate());
-            throw new ValidationException("Неверная дата, тогда ещё не снимали фильмы");
-        }
         filmStorage.addFilm(film);
     }
 
+    public Genre[] getAllGenres() {
+        return filmStorage.getAllGenres();
+    }
+
+    public Genre getGenre(int id) {
+        return filmStorage.getGenre(id);
+    }
+
+    public Mpa[] getAllMpa() {
+        return filmStorage.getAllMpa();
+    }
+
+    public Mpa getMpa(int id) {
+        return filmStorage.getMpa(id);
+    }
 }

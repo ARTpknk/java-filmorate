@@ -13,12 +13,9 @@ public interface FilmStorage {
 
     Collection<Film> getAllFilms();
 
-    boolean containsKey(Film film);
-
-    boolean checkDescriptionLength(Film film);
-
     Film getFilm(int id);
 
-    void updateFilmWithLikes(Film film);
+    void updateFilmWithLikes(int id, int userId);
 
+    void deleteFilmWithLikes(int id, int userId);
 }
