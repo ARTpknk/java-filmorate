@@ -16,7 +16,7 @@ import java.util.Set;
 public class Film implements Comparable<Film> {
     int id;
     Set<Integer> likes;
-    @NotBlank //без nonNull нужно делать конструктор (наверное по-другому нельзя)
+    @NotBlank
     String name;
     @NonNull
     String description;
@@ -54,6 +54,3 @@ public class Film implements Comparable<Film> {
         return this.likes.size() - film.likes.size();
     }
 }
-
-
-

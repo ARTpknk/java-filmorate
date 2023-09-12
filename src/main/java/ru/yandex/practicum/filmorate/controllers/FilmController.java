@@ -24,7 +24,6 @@ public class FilmController {
         this.filmService = filmService;
     }
 
-    //для genres и mpa нужен отдельный контроллер?
     @GetMapping("/genres")
     public Genre[] getAllGenres() {
         return filmService.getAllGenres();
